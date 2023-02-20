@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "memory": "c",
+        "future": "c",
+        "istream": "c",
+        "functional": "c"
+    }
+}
