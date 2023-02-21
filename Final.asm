@@ -7,157 +7,25 @@
 	CR EQU 0DH
 	LF EQU 0AH
 	number DB "00000$"
-	a DW 1 DUP (0000H)	;declaring variable a
-	b DW 1 DUP (0000H)	;declaring variable b
-	c DW 1 DUP (0000H)	;declaring variable c
 .CODE
-func_a PROC
-	PUSH BP
-	MOV BP, SP
-	MOV AX, 7	;line number:4
-	PUSH AX	;line number:4
-	POP AX
-	MOV a,AX
-	POP BP
-	RET
-func_a ENDP
-foo PROC
-	PUSH BP
-	MOV BP, SP
-	MOV AX, [BP+4]	; storing local variable a to AX
-	PUSH AX
-	MOV AX, 3	;line number:8
-	PUSH AX	;line number:8
-	POP BX
-	POP AX
-	ADD AX, BX
-	PUSH AX
-	POP AX
-	MOV [BP+4],AX
-	MOV AX, [BP+4]	; storing local variable a to AX
-	PUSH AX
-	POP BP
-	RET 2
-foo ENDP
-bar PROC
-	PUSH BP
-	MOV BP, SP
-	MOV AX, 4	;line number:14
-	PUSH AX	;line number:14
-	MOV AX, [BP+6]	; storing local variable a to AX
-	PUSH AX
-	POP BX
-	POP AX
-	CWD
-	MUL BX
-	PUSH AX
-	MOV AX, 2	;line number:14
-	PUSH AX	;line number:14
-	MOV AX, [BP+6]	; storing local variable b to AX
-	PUSH AX
-	POP BX
-	POP AX
-	CWD
-	MUL BX
-	PUSH AX
-	POP BX
-	POP AX
-	ADD AX, BX
-	PUSH AX
-	POP AX
-	MOV c,AX
-	MOV AX, c	; storing global variable c to AX
-	PUSH AX
-	CALL print_output
-	CALL new_line
-	MOV AX, c	; storing global variable c to AX
-	PUSH AX
-	POP BP
-	RET 4
-bar ENDP
 main PROC
 	MOV AX, @DATA
 	MOV DS, AX
 	PUSH BP
 	MOV BP, SP
-	SUB SP, 2	;i
-	SUB SP, 2	;j
-	SUB SP, 2	;k
-	SUB SP, 2	;l
-	MOV AX, 5	;line number:23
-	PUSH AX	;line number:23
-	POP AX
+	SUB SP, 2	;laring variable i
+	SUB SP, 2	;laring variable j
+	MOV AX, 0	;line number:5
 	MOV [BP-2],AX
-	MOV AX, 6	;line number:24
-	PUSH AX	;line number:24
-	POP AX
-	MOV [BP-4],AX
-	CALL func_a
-	MOV AX, a	; storing global variable a to AX
-	PUSH AX
-	CALL print_output
-	CALL new_line
 	MOV AX, [BP-2]	; storing local variable i to AX
-	PUSH AX
-	CALL foo
-	POP AX
-	MOV [BP-6],AX
-	MOV AX, [BP-6]	; storing local variable k to AX
-	PUSH AX
-	CALL print_output
-	CALL new_line
-	MOV AX, [BP-2]	; storing local variable i to AX
-	PUSH AX
-	MOV AX, [BP-4]	; storing local variable j to AX
-	PUSH AX
-	CALL bar
-	POP AX
-	MOV [BP-8],AX
-	MOV AX, [BP-8]	; storing local variable l to AX
-	PUSH AX
-	CALL print_output
-	CALL new_line
-	MOV AX, 6	;line number:35
-	PUSH AX	;line number:35
-	MOV AX, [BP-2]	; storing local variable i to AX
-	PUSH AX
-	MOV AX, [BP-4]	; storing local variable j to AX
-	PUSH AX
-	CALL bar
-	POP BX
-	POP AX
-	CWD
-	MUL BX
-	PUSH AX
-	MOV AX, 2	;line number:35
-	PUSH AX	;line number:35
-	POP BX
-	POP AX
-	ADD AX, BX
-	PUSH AX
-	MOV AX, 3	;line number:35
-	PUSH AX	;line number:35
-	MOV AX, [BP-2]	; storing local variable i to AX
-	PUSH AX
-	CALL foo
-	POP BX
-	POP AX
-	CWD
-	MUL BX
-	PUSH AX
-	POP BX
-	POP AX
-	SUB AX, BX
-	PUSH AX
-	POP AX
+	INC AX
+	MOV [BP-2],AX
 	MOV [BP-4],AX
 	MOV AX, [BP-4]	; storing local variable j to AX
-	PUSH AX
 	CALL print_output
 	CALL new_line
-	MOV AX, 0	;line number:39
-	PUSH AX	;line number:39
-	ADD SP, 8
+	MOV AX, 0	;line number:8
+	ADD SP, 4
 	POP BP
 	MOV AX,4CH
 	INT 21H

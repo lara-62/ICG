@@ -10,9 +10,11 @@ int foo(int a){
 }
 
 
-int bar(int a, int b){	
+int bar(int a, int b){
+	//println(a);	
+	//println(b);
 	c = 4*a + 2*b;
-	println(c);
+	
 	return c;
 }
 
@@ -28,7 +30,8 @@ int main(){
 	
 	k = foo(i);
 	println(k);
-	
+	//println(i);
+	//println(j);
 	l = bar(i,j);
 	println(l);
 	

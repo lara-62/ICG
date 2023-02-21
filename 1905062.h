@@ -23,6 +23,7 @@ private:
     bool isglobal;
     int offset;
     string label;
+    vector<string>*labels;
     
 public:
     Symbolinfo *next;
@@ -46,6 +47,7 @@ public:
     offset=0;
    label="";
    is_parameter=false;
+    labels=new vector<string>();
     
 }
 Symbolinfo(string name,string type)
@@ -68,7 +70,7 @@ Symbolinfo(string name,string type)
     offset=0;
    label="";
    is_parameter=false;
-    
+     labels=new vector<string>();
 }
 Symbolinfo(string name,string type,string datatype)
 {
@@ -90,7 +92,7 @@ Symbolinfo(string name,string type,string datatype)
    offset=0;
    label="";
    is_parameter=false;
- 
+    labels=new vector<string>();
 }   
     void setisFunctionDeclaration(bool isdeclaration)
     {
@@ -259,6 +261,14 @@ Symbolinfo(string name,string type,string datatype)
     void set_is_parameter(bool is)
     {
         this->is_parameter=is;
+    }
+    void addlabel(string label)
+    {
+        labels->push_back(label);
+    }
+    vector<string>* getlabels()
+    {
+        return labels;
     }
 };
 

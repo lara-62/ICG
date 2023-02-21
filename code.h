@@ -38,6 +38,25 @@ void code_merge()
     final.close();
 }
 
+
+//optimizing code file
+void optimize_code()
+{
+  ifstream unoptimized("Final.asm");
+  ofstream optimized("optimized.asm");
+  vector<string>unop_lines;
+  string line;
+   while (getline(unoptimized, line))
+    {
+        unop_lines.push_back(line);
+    }
+    for(int i=0;i<unop_lines.size()-1;i++)
+    {
+       
+    }
+
+}
+
 //printing functions
 void print_function()
 {
@@ -173,7 +192,7 @@ void variable_code(Symbolinfo *info,int index=-1)
     if(symbol->getisglobal())
     {
         codeout<<"\tMOV AX, "<<symbol->getName()<<"\t; storing global variable "<<symbol->getName()<<" to AX\n";
-        codeout<<"\tPUSH AX\n";
+        //codeout<<"\tPUSH AX\n";
     }
     else
     {  
@@ -181,24 +200,24 @@ void variable_code(Symbolinfo *info,int index=-1)
       {
        if(symbol->getisArray()){
       codeout<<"\tMOV AX, [BP+"<<symbol->getoffset()+(index*2)<<"]\t; storing local array variable "<<symbol->getName()<<" to AX\n";
-        codeout<<"\tPUSH AX\n";  
+        //codeout<<"\tPUSH AX\n";  
     }
     else
     {
         codeout<<"\tMOV AX, [BP+"<<symbol->getoffset()<<"]\t; storing local variable "<<symbol->getName()<<" to AX\n";
-        codeout<<"\tPUSH AX\n";  
+        //codeout<<"\tPUSH AX\n";  
     }
       }
       else
       {
            if(symbol->getisArray()){
       codeout<<"\tMOV AX, [BP-"<<symbol->getoffset()+(index*2)<<"]\t; storing local array variable "<<symbol->getName()<<" to AX\n";
-        codeout<<"\tPUSH AX\n";  
+        //codeout<<"\tPUSH AX\n";  
     }
     else
     {
         codeout<<"\tMOV AX, [BP-"<<symbol->getoffset()<<"]\t; storing local variable "<<symbol->getName()<<" to AX\n";
-        codeout<<"\tPUSH AX\n";  
+        //codeout<<"\tPUSH AX\n";  
     }
       }
       
@@ -249,17 +268,18 @@ void MULOP_code(Symbolinfo *info)
     if(info->getName()=="*")
     {
         codeout<<"\tMUL BX\n";
-         codeout<<"\tPUSH AX\n";
+        // codeout<<"\tPUSH AX\n";
     }
     if(info->getName()=="/")
     {
          codeout<<"\tDIV BX\n";
-        codeout<<"\tPUSH AX\n";
+        //codeout<<"\tPUSH AX\n";
     }
     if(info->getName()=="%")
     {
          codeout<<"\tDIV BX\n";
-        codeout<<"\tPUSH DX\n";
+         codeout<<"\tMOV AX, DX\n";
+        //codeout<<"\tPUSH DX\n";
     }
 
 }
@@ -271,12 +291,12 @@ void ADDOP_code(Symbolinfo *info)
     if(info->getName()=="+")
     {
         codeout<<"\tADD AX, BX\n";
-         codeout<<"\tPUSH AX\n";
+         //codeout<<"\tPUSH AX\n";
     }
     if(info->getName()=="-")
     {
          codeout<<"\tSUB AX, BX\n";
-        codeout<<"\tPUSH AX\n";
+        //codeout<<"\tPUSH AX\n";
     }
   
 }

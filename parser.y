@@ -266,6 +266,7 @@ void add_parameter_toScopeTable(vector<Symbolinfo*>*param)
 			temp->setDataType(symbol->getDataType());
 			temp->set_is_parameter(true);
 			temp->setoffset(offset);
+			offset-=2;
 		 }
 		 else
 		 {
@@ -361,6 +362,7 @@ Symbolinfo* CallFunction(Symbolinfo* function_name,vector<Symbolinfo*>*symbols)
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
+
 
 %%
 
@@ -773,16 +775,19 @@ statement : var_declaration {
 			              $$->SetEndLine($1->GetEndLine());
              logfile<<"statement : compound_statement"<<endl;
 	  }
-	  | FOR LPAREN expression_statement {for_start=newLabel();for_inc_start=newLabel();for_inc_end=newLabel();for_end=newLabel();codeout<<for_start<<":\n";}
+	  | FOR LPAREN expression_statement {for_start=newLabel();for_inc_start=newLabel();for_inc_end=newLabel();for_end=newLabel();codeout<<for_start<<":\n";
+	     $2->addlabel(for_start);$2->addlabel(for_inc_start);$2->addlabel(for_inc_end);$2->addlabel(for_end);}
 	  expression_statement { 
 		            
-                     codeout<<"\tPOP AX\n";
+                    // codeout<<"\tPOP AX\n";
 					 codeout<<"\tCMP AX ,0\n";
 					 codeout<<"\tJE "<<for_end<<"\n";
 					 codeout<<"\tJMP "<<for_inc_end<<"\n";
 					 codeout<<for_inc_start<<":\n";
 	  } expression{ codeout<<"\tJMP "<<for_start<<"\n";codeout<<for_inc_end<<":\n";} RPAREN statement {
-		      $$=new Symbolinfo("FOR LPAREN expression_statement expression_statement expression RPAREN statement","statement");
+		      
+			  $$=new Symbolinfo("FOR LPAREN expression_statement expression_statement expression RPAREN statement","statement");
+		 
 			  $$->add_child($1);
 			  $$->add_child($2);
 			  $$->add_child($3);
@@ -795,8 +800,8 @@ statement : var_declaration {
              logfile<<"statement : FOR LPAREN expression_statement expression_statement expression RPAREN statement"<<endl;
 
 			 //CODE
-			 codeout<<"\tJMP "<<for_inc_start<<"\n";
-			 codeout<<for_end<<":\n";
+			 codeout<<"\tJMP "<<(*($2->getlabels()))[1]<<"\n";
+			 codeout<<(*($2->getlabels()))[3]<<":\n";
 	  }
 	  | if_part %prec LOWER_THAN_ELSE{
 		      $$=new Symbolinfo("IF LPAREN expression RPAREN statement","statement");
@@ -829,10 +834,12 @@ statement : var_declaration {
               logfile<<"statement : IF LPAREN expression RPAREN statement ELSE statement"<<endl;
 			  codeout<<$1->getlabel()<<":\n";
 	  }
-	  | WHILE LPAREN{while_start=newLabel();while_end=newLabel();codeout<<while_start<<":\n";} expression { 
+	  | WHILE LPAREN{while_start=newLabel();while_end=newLabel();codeout<<while_start<<":\n";
+	      $2->addlabel(while_start);$2->addlabel(while_end);
+		 } expression { 
 		          //code
 				  
-				  codeout<<"\tPOP AX\n";
+				  //codeout<<"\tPOP AX\n";
 				  codeout<<"\tCMP AX, 0\n";
 				  codeout<<"\tJE "<<while_end<<"\n";
 	  } RPAREN statement {
@@ -847,8 +854,8 @@ statement : var_declaration {
              logfile<<"statement : WHILE LPAREN expression RPAREN statement"<<endl;
 
 			 //CODE
-			 codeout<<"\tJMP "<<while_start<<"\n";
-			 codeout<<while_end<<":\n";
+			 codeout<<"\tJMP "<<(*($2->getlabels()))[0]<<"\n";
+			 codeout<<(*($2->getlabels()))[1]<<":\n";
 	  }
 	  | PRINTLN LPAREN ID RPAREN SEMICOLON {
 		      $$=new Symbolinfo("PRINTLN LPAREN ID RPAREN SEMICOLON","statement");
@@ -881,10 +888,10 @@ statement : var_declaration {
 	  ;
 
 if_part:  IF LPAREN expression {
-		         codeout<<"\tPOP AX\n";
+		         //codeout<<"\tPOP AX\n";
 				 codeout<<"\tCMP AX, 0\n";
 				 string endif=newLabel();
-				 codeout<<"\tJMP "<<endif<<"\n";
+				 codeout<<"\tJE "<<endif<<"\n";
 				 $3->setlabel(endif); }RPAREN statement{$$->setlabel($3->getlabel()); };
         
 expression_statement : SEMICOLON{
@@ -1001,7 +1008,7 @@ expression : logic_expression {
 			  }
 			  vector<Symbolinfo*>temp=*($1->getChildList());
               logfile<<"expression : variable ASSIGNOP logic_expression"<<endl;
-			  codeout<<"\tPOP AX\n";
+			  //codeout<<"\tPOP AX\n";
 			  assigntovariable(temp[0],arrayindex);
               //codeout<<"\tPUSH AX\n";
 	          arrayindex=-1;
@@ -1022,16 +1029,16 @@ logic_expression : rel_expression {
 	              
                   logfile<<"logic_expression : rel_expression"<<endl;
         }
-		 | rel_expression LOGICOP rel_expression {
+		 | rel_expression {codeout<<"\tPUSH AX\n";}LOGICOP rel_expression {
 			        
 			  $$=new Symbolinfo("rel_expression LOGICOP rel_expression","logic_expression","INT");
 			  $$->add_child($1);
-			  $$->add_child($2);
 			  $$->add_child($3);
+			  $$->add_child($4);
 			 
 			  $$->SetStartLine($1->GetStartLine());
-			  $$->SetEndLine($3->GetEndLine());
-			     if($3->getDataType()=="VOID"||$1->getDataType()=="VOID")
+			  $$->SetEndLine($4->GetEndLine());
+			     if($1->getDataType()=="VOID"||$4->getDataType()=="VOID")
 			  {
 				errorfile<<"Line# "<<line_count<<": Void cannot be used in expression"<<endl;
 				error_count++;
@@ -1041,7 +1048,8 @@ logic_expression : rel_expression {
              //CODING PART
 			 string label=newLabel();
 			 string label2=newLabel();
-			 if($2->getName()=="||"){
+			 codeout<<"\tPUSH AX\n";
+			 if($3->getName()=="||"){
 			  codeout<<"\tPOP BX\n";
               codeout<<"\tPOP AX\n";
 			  codeout<<"\tCMP AX, 0\n";
@@ -1049,11 +1057,11 @@ logic_expression : rel_expression {
 			  codeout<<"\tCMP BX, 0\n";
 			  codeout<<"\tJNE "<<label<<"\n";
 			  codeout<<"\tMOV AX, 0\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<"\tJMP "<<label2<<"\n";
               codeout<<label<<":\n";
 			  codeout<<"\tMOV AX, 1\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<label2<<":\n";
 			 }
 			 else
@@ -1065,11 +1073,11 @@ logic_expression : rel_expression {
 			  codeout<<"\tCMP BX, 0\n";
 			  codeout<<"\tJE "<<label<<"\n";
 			  codeout<<"\tMOV AX, 1\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<"\tJMP "<<label2<<"\n";
               codeout<<label<<":\n";
 			  codeout<<"\tMOV AX, 0\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<label2<<":\n";
 			 }
 		 }	
@@ -1090,34 +1098,35 @@ rel_expression	: simple_expression {
 	             
                   logfile<<"rel_expression : simple_expression"<<endl;
         }
-		| simple_expression RELOP simple_expression	{
+		| simple_expression {codeout<<"\tPUSH AX\n";}RELOP simple_expression	{
 			    $$=new Symbolinfo("simple_expression RELOP simple_expression","rel_expression","INT");
 				$$->add_child($1);
-			    $$->add_child($2);
 			    $$->add_child($3);
+			    $$->add_child($4);
 			    $$->SetStartLine($1->GetStartLine());
-			    $$->SetEndLine($3->GetEndLine());
+			    $$->SetEndLine($4->GetEndLine());
 			
             logfile<<"rel_expression : simple_expression RELOP simple_expression"<<endl;
-			   if($3->getDataType()=="VOID"||$1->getDataType()=="VOID")
+			   if($4->getDataType()=="VOID"||$1->getDataType()=="VOID")
 			  {
 				errorfile<<"Line# "<<line_count<<": Void cannot be used in expression "<<endl;
 				error_count++;
 			  }
-               string Relop=get_relop($2);
+               string Relop=get_relop($3);
 			   string label=newLabel();
 			   string label2=newLabel();
 			  //code
+			  codeout<<"\tPUSH AX\n";
 			  codeout<<"\tPOP BX\n";
 			  codeout<<"\tPOP AX\n";
 			  codeout<<"\tCMP AX, BX\n";
 			  codeout<<"\t"<<Relop<<" "<<label<<"\n";
 			  codeout<<"\tMOV AX, 0\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<"\tJMP "<<label2<<"\n";
 			  codeout<<label<<":\n";
 			  codeout<<"\tMOV AX, 1\n";
-			  codeout<<"\tPUSH AX\n";
+			  //codeout<<"\tPUSH AX\n";
 			  codeout<<label2<<":\n";
 		}
 		;
@@ -1135,7 +1144,7 @@ simple_expression : term {
 						 }
                      logfile<<"simple_expression : term"<<endl;
         }
-		  | simple_expression ADDOP term {
+		  | simple_expression {codeout<<"\tPUSH AX\n";}ADDOP term {
 			             if($1->getDataType()=="FLOAT"||$3->getDataType()=="FLOAT")
 							{
 								 $$=new Symbolinfo("simple_expression ADDOP term","simple_expression","FLOAT");
@@ -1144,22 +1153,22 @@ simple_expression : term {
 			              $$=new Symbolinfo("simple_expression ADDOP term","simple_expression",$1->getDataType());
 							}
 						$$->add_child($1);
-						$$->add_child($2);
 						$$->add_child($3);
+						$$->add_child($4);
 
 						$$->SetStartLine($1->GetStartLine());
-						$$->SetEndLine($3->GetEndLine());
+						$$->SetEndLine($4->GetEndLine());
 			
 			          
-						 if ($1->getName()==$3->getName() && $2->getName()=="-")
+						 if ($1->getName()==$4->getName() && $3->getName()=="-")
 						 {
 							$$->setisZero(true);
 						 }
-						 if($3->getiszero() && $1->getiszero())
+						 if($4->getiszero() && $1->getiszero())
 						 {
 							$$->setisZero(true);
 						 }
-						    if($3->getDataType()=="VOID"||$1->getDataType()=="VOID")
+						    if($4->getDataType()=="VOID"||$1->getDataType()=="VOID")
 			             {
 				      errorfile<<"Line# "<<line_count<<": Void cannot be used in expression "<<endl;
 					  error_count++;
@@ -1167,7 +1176,8 @@ simple_expression : term {
                     logfile<<"simple_expression : simple_expression ADDOP term"<<endl;
 
 					//code
-					ADDOP_code($2);
+					codeout<<"\tPUSH AX\n";
+					ADDOP_code($3);
 		  } 
 		  ;
 					
@@ -1184,30 +1194,30 @@ term :	unary_expression {
 						 }
                          logfile<<"term : unary_expression"<<endl;
         }
-     |  term MULOP unary_expression {
+     |  term{codeout<<"\tPUSH AX\n";} MULOP unary_expression {
 		                 cout<<"unary_expression:"<<$3->getiszero()<<endl;
-						    if(($1->getDataType()=="FLOAT"||$3->getDataType()=="FLOAT")&& $2->getName()!="%")
+						    if(($1->getDataType()=="FLOAT"||$3->getDataType()=="FLOAT")&& $3->getName()!="%")
 							{
 								 $$=new Symbolinfo("term MULOP unary_expression","term","FLOAT");
 							}else{
 		                    $$=new Symbolinfo("term MULOP unary_expression","term",$1->getDataType());
 							}
 					 $$->add_child($1);
-			         $$->add_child($2);
-			          $$->add_child($3);
+			         $$->add_child($3);
+			          $$->add_child($4);
 			  
 			         $$->SetStartLine($1->GetStartLine());
-			        $$->SetEndLine($3->GetEndLine());
-						 if(($2->getName()=="%" || $2->getName()=="/")&&($3->getiszero()))
+			        $$->SetEndLine($4->GetEndLine());
+						 if(($3->getName()=="%" || $3->getName()=="/")&&($4->getiszero()))
 						 {
 							errorfile<<"Line# "<<line_count<<": Warning: division by zero i=0f=1Const=0"<<endl;
 							error_count++;
 						 }
-						 if($2->getName()=="%" && ($3->getDataType()!="INT"||$1->getDataType()!="INT")){
+						 if($3->getName()=="%" && ($4->getDataType()!="INT"||$1->getDataType()!="INT")){
 							errorfile<<"Line# "<<line_count<<": Operands of modulus must be integers "<<endl;
 							error_count++;
 						 }
-						 if(($2->getName()=="*")&&($3->getiszero()||$1->getiszero()))
+						 if(($3->getName()=="*")&&($4->getiszero()||$1->getiszero()))
 						 {
 							$$->setisZero(true);
 						 }
@@ -1219,7 +1229,8 @@ term :	unary_expression {
                          logfile<<"term : term MULOP unary_expression"<<endl;
 
 						 //code part
-						 MULOP_code($2);
+						 codeout<<"\tPUSH AX\n";
+						 MULOP_code($3);
 	 }
      ;
 
@@ -1241,7 +1252,7 @@ unary_expression : ADDOP unary_expression {
 
 				 if($1->getName()=="-")
 				 {
-					codeout<<"\tPOP AX\n";
+					//codeout<<"\tPOP AX\n";
 					codeout<<"\tNEG AX\n";
 					codeout<<"\tPUSH AX\n";
 				 }
@@ -1264,7 +1275,7 @@ unary_expression : ADDOP unary_expression {
 			  //code 
               string label=newLabel();
 			  string label2=newLabel();
-			  codeout<<"\tPOP AX\n";
+			  //codeout<<"\tPOP AX\n";
 			  codeout<<"\tCMP AX, 0\n";
 			  codeout<<"\tJE "<<label<<"\n";
 			  codeout<<"\t MOV AX, 0\n";
@@ -1290,7 +1301,7 @@ unary_expression : ADDOP unary_expression {
 		 }
 		 ;
 	
-factor	: variable {  
+factor	: variable{  
 	                    
 					  $$=new Symbolinfo("variable","factor",$1->getDataType());
 					     $$->add_child($1);
@@ -1344,7 +1355,7 @@ factor	: variable {
 				}
                 logfile<<"factor : CONST_INT"<<endl;
 				codeout<<"\tMOV AX, "<<$1->getName()<<"\t;line number:"<<line_count<<"\n";
-				codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
+				//codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
 				arrayindex=stoi($1->getName());
 	}
 	| CONST_FLOAT {
@@ -1354,7 +1365,7 @@ factor	: variable {
 			             $$->SetStartLine($1->GetStartLine());
 			             $$->SetEndLine($1->GetEndLine());
 		      codeout<<"\tMOV AX, "<<$1->getName()<<"\t;line number:"<<line_count<<"\n";
-			  codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
+			  //codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
                logfile<<"factor : CONST_FLOAT"<<endl;
 	}
 	| variable INCOP {
@@ -1416,6 +1427,7 @@ arguments : arguments COMMA logic_expression {
 				  info->SetStartLine($3->GetStartLine());
 	              Argument->push_back(info);
                   logfile<<"arguments	: arguments COMMA logic_expression"<<endl;
+				  codeout<<"\tPUSH AX\n";
            }
 	      | logic_expression {
 			       $$=new Symbolinfo("logic_expression","arguments",$1->getDataType());
@@ -1428,7 +1440,7 @@ arguments : arguments COMMA logic_expression {
 				 Symbolinfo *info=new Symbolinfo($1->getName(),$1->getType(),$1->getDataType());
 				 info->SetStartLine($1->GetStartLine());
 	              Argument->push_back(info);
-				
+				codeout<<"\tPUSH AX\n";
                 logfile<<"arguments	: logic_expression"<<endl;
 			
 		  }
