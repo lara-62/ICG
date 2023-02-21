@@ -13,6 +13,72 @@ void create_code_files()
    codeout.open("code.asm",ios::out);
    dataout.open("Final.asm",ios::out);
 }
+
+//optimizing code file
+void optimize_code()
+{
+  ifstream unoptimized("Final.asm");
+  ofstream optimized("optimized.asm");
+  vector<string>unop_lines;
+  string line;
+   while (getline(unoptimized, line))
+    {
+        unop_lines.push_back(line);
+    }
+    int i;
+    for(i=0;i<unop_lines.size()-1;i++)
+    { 
+      if(unop_lines[i].size()>9){
+        if(unop_lines[i].substr(1,9)=="ADD AX, 0")
+               continue;
+      }
+       if(unop_lines[i].size()>8 &&unop_lines[i+1].size()>7)
+      {
+        if(unop_lines[i].substr(1,7)=="PUSH AX" && unop_lines[i+1].substr(1,7)=="POP AX")
+        {
+         
+          i++;
+          continue;
+        }
+      }
+      if(unop_lines[i].size()>3 && unop_lines[i+1].size()>3)
+      {
+        if(unop_lines[i].substr(1,3)=="MOV" && unop_lines[i+1].substr(1,3)=="MOV")
+        {
+             int semi1=unop_lines[i].find("\t;");
+             int semi2=unop_lines[i+1].find("\t;");
+             string firstline=unop_lines[i].substr(4,semi1-4);
+             string secondline=unop_lines[i+1].substr(4,semi2-4);
+             int first_comma=firstline.find(",");
+             int second_comma=secondline.find(",");
+            // optimized<<endl;
+            // optimized<<firstline.substr(1,first_comma-1)<<"okay"<<endl;
+            // optimized<<secondline.substr(second_comma+2)<<"okay"<<endl;
+             // optimized<<firstline.substr(first_comma+2)<<"okay"<<endl;
+             //optimized<<secondline.substr(1,second_comma-1)<<"okay"<<endl;
+             // optimized<<endl;
+             if(firstline.substr(1,first_comma-1)==secondline.substr(second_comma+2)&&firstline.substr(first_comma+2)==secondline.substr(1,second_comma-1)) 
+             {
+             // optimized<<unop_lines[i]<<unop_lines[i+1];
+              optimized<<unop_lines[i]<<";Removing redundant assigment after it"<<endl;
+              i++;
+              continue;
+             }
+        }
+      }
+      optimized<<unop_lines[i]<<endl;
+    }
+    if(i<unop_lines.size())
+    {
+        optimized<<unop_lines[i]<<endl;
+    }
+    unoptimized.close();
+    optimized.close();
+
+}
+
+
+
 //merging code files
 
 void code_merge()
@@ -36,26 +102,11 @@ void code_merge()
    
     codefile.close();
     final.close();
+    optimize_code();
 }
 
 
-//optimizing code file
-void optimize_code()
-{
-  ifstream unoptimized("Final.asm");
-  ofstream optimized("optimized.asm");
-  vector<string>unop_lines;
-  string line;
-   while (getline(unoptimized, line))
-    {
-        unop_lines.push_back(line);
-    }
-    for(int i=0;i<unop_lines.size()-1;i++)
-    {
-       
-    }
 
-}
 
 //printing functions
 void print_function()
@@ -126,10 +177,12 @@ void function_start(Symbolinfo *info)
     }
     codeout<<"\tPUSH BP\n\tMOV BP, SP\n";
 }
-void function_end(Symbolinfo *info,int varcount)
+void function_end(Symbolinfo *info,int varcount,string label)
 {   
     Symbolinfo *temp=table->LookUp(info->getName());
-    
+    if(label!=""){
+    codeout<<label<<":\n";
+    }
     if(varcount)
       {
         
@@ -228,7 +281,7 @@ void assigntovariable(Symbolinfo *info,int arrayindex=-1)
      Symbolinfo *symbol=table->LookUp(info->getName());
     if(symbol->getisglobal())
     {
-       codeout<<"\tMOV "<<symbol->getName()<<",AX\n";
+       codeout<<"\tMOV "<<symbol->getName()<<", AX\t;assigning to global variable"<<symbol->getName()<<"\n";
     }
     else
     {  
@@ -236,25 +289,25 @@ void assigntovariable(Symbolinfo *info,int arrayindex=-1)
       {
            if(symbol->getisArray()){
                    
-		codeout<<"\tMOV "<<"[BP+"<<((symbol->getoffset()+(arrayindex*2)))<<"]"<<",AX\n";
+		codeout<<"\tMOV "<<"[BP+"<<((symbol->getoffset()+(arrayindex*2)))<<"]"<<", AX\t;assigning to local variable"<<symbol->getName()<<"\n";
          
     }
     else
     {
         
-		codeout<<"\tMOV "<<"[BP+"<<(symbol->getoffset())<<"]"<<",AX\n";
+		codeout<<"\tMOV "<<"[BP+"<<(symbol->getoffset())<<"]"<<", AX\t;assigning to local variable"<<symbol->getName()<<"\n";
     }
       }
       else{
       if(symbol->getisArray()){
                    
-		codeout<<"\tMOV "<<"[BP-"<<((symbol->getoffset()+(arrayindex*2)))<<"]"<<",AX\n";
+		codeout<<"\tMOV "<<"[BP-"<<((symbol->getoffset()+(arrayindex*2)))<<"]"<<", AX\t;assigning to local variable"<<symbol->getName()<<"\n";
          
     }
     else
     {
         
-		codeout<<"\tMOV "<<"[BP-"<<(symbol->getoffset())<<"]"<<",AX\n";
+		codeout<<"\tMOV "<<"[BP-"<<(symbol->getoffset())<<"]"<<", AX\t;assigning to local variable"<<symbol->getName()<<"\n";
     }
       }
     } 

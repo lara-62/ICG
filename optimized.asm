@@ -1,3 +1,15 @@
+;-------
+;
+;-------
+.MODEL SMALL
+.STACK 1000H
+.Data
+	CR EQU 0DH
+	LF EQU 0AH
+	number DB "00000$"
+	a DW 1 DUP (0000H)	;declaring variable a
+	b DW 1 DUP (0000H)	;declaring variable b
+	c DW 1 DUP (0000H)	;declaring variable c
 .CODE
 func_a PROC
 	PUSH BP
@@ -17,8 +29,7 @@ foo PROC
 	POP BX
 	POP AX
 	ADD AX, BX
-	MOV [BP+4], AX	;assigning to local variablea
-	MOV AX, [BP+4]	; storing local variable a to AX
+	MOV [BP+4], AX	;assigning to local variablea;Removing redundant assigment after it
 	JMP L0	;nothing after return statement and before function end will execute
 L0:
 	POP BP
@@ -48,8 +59,7 @@ bar PROC
 	POP BX
 	POP AX
 	ADD AX, BX
-	MOV c, AX	;assigning to global variablec
-	MOV AX, c	; storing global variable c to AX
+	MOV c, AX	;assigning to global variablec;Removing redundant assigment after it
 	JMP L1	;nothing after return statement and before function end will execute
 L1:
 	POP BP
@@ -75,8 +85,7 @@ main PROC
 	MOV AX, [BP-2]	; storing local variable i to AX
 	PUSH AX
 	CALL foo
-	MOV [BP-6], AX	;assigning to local variablek
-	MOV AX, [BP-6]	; storing local variable k to AX
+	MOV [BP-6], AX	;assigning to local variablek;Removing redundant assigment after it
 	CALL print_output
 	CALL new_line
 	MOV AX, [BP-2]	; storing local variable i to AX
@@ -84,8 +93,7 @@ main PROC
 	MOV AX, [BP-4]	; storing local variable j to AX
 	PUSH AX
 	CALL bar
-	MOV [BP-8], AX	;assigning to local variablel
-	MOV AX, [BP-8]	; storing local variable l to AX
+	MOV [BP-8], AX	;assigning to local variablel;Removing redundant assigment after it
 	CALL print_output
 	CALL new_line
 	MOV AX, 6	;line number:38
@@ -121,8 +129,7 @@ main PROC
 	POP BX
 	POP AX
 	SUB AX, BX
-	MOV [BP-4], AX	;assigning to local variablej
-	MOV AX, [BP-4]	; storing local variable j to AX
+	MOV [BP-4], AX	;assigning to local variablej;Removing redundant assigment after it
 	CALL print_output
 	CALL new_line
 	MOV AX, 0	;line number:42

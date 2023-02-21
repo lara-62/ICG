@@ -24,6 +24,7 @@ private:
     int offset;
     string label;
     vector<string>*labels;
+   
     
 public:
     Symbolinfo *next;
@@ -48,7 +49,7 @@ public:
    label="";
    is_parameter=false;
     labels=new vector<string>();
-    
+  
 }
 Symbolinfo(string name,string type)
 {
@@ -71,6 +72,7 @@ Symbolinfo(string name,string type)
    label="";
    is_parameter=false;
      labels=new vector<string>();
+   
 }
 Symbolinfo(string name,string type,string datatype)
 {
@@ -93,6 +95,7 @@ Symbolinfo(string name,string type,string datatype)
    label="";
    is_parameter=false;
     labels=new vector<string>();
+    
 }   
     void setisFunctionDeclaration(bool isdeclaration)
     {
@@ -270,6 +273,7 @@ Symbolinfo(string name,string type,string datatype)
     {
         return labels;
     }
+    
 };
 
 class ScopeTable

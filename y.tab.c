@@ -1050,13 +1050,13 @@ static const yytype_int16 yyrline[] =
 {
        0,   369,   369,   369,   392,   399,   408,   415,   423,   433,
      453,   472,   472,   505,   505,   539,   553,   566,   580,   596,
-     596,   609,   609,   622,   639,   648,   657,   667,   682,   702,
-     718,   740,   747,   757,   764,   771,   778,   780,   787,   778,
-     806,   818,   818,   837,   839,   837,   860,   876,   890,   890,
-     897,   904,   914,   933,   971,   984,  1018,  1032,  1032,  1086,
-    1101,  1101,  1134,  1147,  1147,  1184,  1197,  1197,  1237,  1261,
-    1288,  1304,  1317,  1336,  1345,  1361,  1371,  1386,  1403,  1411,
-    1418,  1432
+     596,   610,   610,   625,   642,   651,   660,   670,   685,   705,
+     721,   743,   752,   766,   773,   780,   787,   789,   796,   787,
+     815,   827,   827,   846,   848,   846,   869,   885,   902,   902,
+     909,   916,   926,   945,   983,   996,  1030,  1044,  1044,  1098,
+    1113,  1113,  1146,  1159,  1159,  1196,  1209,  1209,  1249,  1273,
+    1300,  1316,  1329,  1348,  1357,  1373,  1383,  1399,  1418,  1426,
+    1433,  1447
 };
 #endif
 
@@ -1895,7 +1895,7 @@ yyreduce:
 					}
 					returnLine=-1;
 					function_return="";
-					function_end((yyvsp[-5].symbolinfo),var_prevscope);
+					function_end((yyvsp[-5].symbolinfo),var_prevscope,(yyvsp[0].symbolinfo)->getlabel());
                 }
 #line 1901 "y.tab.c"
     break;
@@ -1937,7 +1937,7 @@ yyreduce:
 					}
 					returnLine=-1;
 					function_return="";
-					function_end((yyvsp[-4].symbolinfo),var_prevscope);
+					function_end((yyvsp[-4].symbolinfo),var_prevscope,(yyvsp[0].symbolinfo)->getlabel());
 		}
 #line 1943 "y.tab.c"
     break;
@@ -2035,19 +2035,20 @@ yyreduce:
 					   var_prevscope=table->getvarCountCurrentScope();
 					   table->printAll(logfile);
 					   table->Exit_Scope();
-					   
+					    
+				   (yyval.symbolinfo)->setlabel((yyvsp[-1].symbolinfo)->getlabel());
                   }
-#line 2041 "y.tab.c"
+#line 2042 "y.tab.c"
     break;
 
   case 21: /* $@5: %empty  */
-#line 609 "parser.y"
+#line 610 "parser.y"
                            { table->Enter_Scope();add_parameter_toScopeTable(function_parameter);clear_list(function_parameter);}
-#line 2047 "y.tab.c"
+#line 2048 "y.tab.c"
     break;
 
   case 22: /* compound_statement: LCURL $@5 RCURL  */
-#line 609 "parser.y"
+#line 610 "parser.y"
                                                                                                                                         {
 				        (yyval.symbolinfo)=new Symbolinfo("LCURL RCURL","compound_statement");
 					    (yyval.symbolinfo)->add_child((yyvsp[-2].symbolinfo));
@@ -2057,13 +2058,15 @@ yyreduce:
 			           (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
 					  table->printAll(logfile);
 				      table->Exit_Scope();
+					    
+				   (yyval.symbolinfo)->setlabel("");
                       logfile<<"compound_statement : LCURL RCURL"<<endl;
 			}
-#line 2063 "y.tab.c"
+#line 2066 "y.tab.c"
     break;
 
   case 23: /* var_declaration: type_specifier declaration_list SEMICOLON  */
-#line 622 "parser.y"
+#line 625 "parser.y"
                                                             {
 	                 (yyval.symbolinfo)=new Symbolinfo("type_specifier declaration_list SEMICOLON","var_declaration");
 					 (yyval.symbolinfo)->add_child((yyvsp[-2].symbolinfo));
@@ -2079,11 +2082,11 @@ yyreduce:
 	                  logfile<<"var_declaration	: type_specifier declaration_list SEMICOLON"<<endl;
 
            }
-#line 2083 "y.tab.c"
+#line 2086 "y.tab.c"
     break;
 
   case 24: /* type_specifier: INT  */
-#line 639 "parser.y"
+#line 642 "parser.y"
                       { 
 	                 (yyval.symbolinfo)=new Symbolinfo("INT","type_specifier");
 					 (yyval.symbolinfo)->setDataType("INT");
@@ -2093,11 +2096,11 @@ yyreduce:
 	                 logfile<<"type_specifier : INT"<<endl;
                          
                     }
-#line 2097 "y.tab.c"
+#line 2100 "y.tab.c"
     break;
 
   case 25: /* type_specifier: FLOAT  */
-#line 648 "parser.y"
+#line 651 "parser.y"
                          {  
 			        (yyval.symbolinfo)=new Symbolinfo("FLOAT","type_specifier");
 					(yyval.symbolinfo)->setDataType("FLOAT");
@@ -2107,11 +2110,11 @@ yyreduce:
 			        logfile<<"type_specifier : FLOAT"<<endl;
 
                          }
-#line 2111 "y.tab.c"
+#line 2114 "y.tab.c"
     break;
 
   case 26: /* type_specifier: VOID  */
-#line 657 "parser.y"
+#line 660 "parser.y"
                           {
 			        (yyval.symbolinfo)=new Symbolinfo("VOID","type_specifier");
 					(yyval.symbolinfo)->setDataType("VOID");
@@ -2120,11 +2123,11 @@ yyreduce:
 			        (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
 			        logfile<<"type_specifier : VOID"<<endl;
                          }
-#line 2124 "y.tab.c"
+#line 2127 "y.tab.c"
     break;
 
   case 27: /* declaration_list: declaration_list COMMA ID  */
-#line 667 "parser.y"
+#line 670 "parser.y"
                                              {
 	               Symbolinfo *child=new Symbolinfo((yyvsp[0].symbolinfo)->getName(),(yyvsp[0].symbolinfo)->getType());
 				   child->setisglobal(table->get_Current_Scope());
@@ -2140,11 +2143,11 @@ yyreduce:
 				   (yyval.symbolinfo)->SetStartLine((yyvsp[-2].symbolinfo)->GetStartLine());
 			       (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());	   
           }
-#line 2144 "y.tab.c"
+#line 2147 "y.tab.c"
     break;
 
   case 28: /* declaration_list: declaration_list COMMA ID LSQUARE CONST_INT RSQUARE  */
-#line 682 "parser.y"
+#line 685 "parser.y"
                                                                         {
 			    Symbolinfo *child=new Symbolinfo((yyvsp[-3].symbolinfo)->getName(),(yyvsp[-3].symbolinfo)->getType());
 			    child->setisArray(true);
@@ -2165,11 +2168,11 @@ yyreduce:
 			  (yyval.symbolinfo)->SetStartLine((yyvsp[-5].symbolinfo)->GetStartLine());
 			(yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
           }
-#line 2169 "y.tab.c"
+#line 2172 "y.tab.c"
     break;
 
   case 29: /* declaration_list: ID  */
-#line 702 "parser.y"
+#line 705 "parser.y"
                        { 
 			    variable_declaration=new vector<Symbolinfo*>();
 				Symbolinfo *child=new Symbolinfo((yyvsp[0].symbolinfo)->getName(),(yyvsp[0].symbolinfo)->getType());
@@ -2186,11 +2189,11 @@ yyreduce:
 			   (yyval.symbolinfo)->SetStartLine((yyvsp[0].symbolinfo)->GetStartLine());
 			   (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
           }
-#line 2190 "y.tab.c"
+#line 2193 "y.tab.c"
     break;
 
   case 30: /* declaration_list: ID LSQUARE CONST_INT RSQUARE  */
-#line 718 "parser.y"
+#line 721 "parser.y"
                                                  {
 			Symbolinfo *child=new Symbolinfo((yyvsp[-3].symbolinfo)->getName(),(yyvsp[-3].symbolinfo)->getType());
 			child->setisArray(true);
@@ -2211,23 +2214,25 @@ yyreduce:
 			(yyval.symbolinfo)->SetStartLine((yyvsp[-3].symbolinfo)->GetStartLine());
 			(yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
           }
-#line 2215 "y.tab.c"
+#line 2218 "y.tab.c"
     break;
 
   case 31: /* statements: statement  */
-#line 740 "parser.y"
+#line 743 "parser.y"
                        {
 	               (yyval.symbolinfo)=new Symbolinfo("statement","statements",(yyvsp[0].symbolinfo)->getDataType());
 			       (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
 			       (yyval.symbolinfo)->SetStartLine((yyvsp[0].symbolinfo)->GetStartLine());
 			       (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
                    logfile<<"statements	: statement"<<endl;
+				   if((yyvsp[0].symbolinfo)->getlabel()!="")
+				   (yyval.symbolinfo)->setlabel((yyvsp[0].symbolinfo)->getlabel());
         }
-#line 2227 "y.tab.c"
+#line 2232 "y.tab.c"
     break;
 
   case 32: /* statements: statements statement  */
-#line 747 "parser.y"
+#line 752 "parser.y"
                                   {
 		      (yyval.symbolinfo)=new Symbolinfo("statements statement","statements");
 			(yyval.symbolinfo)->add_child((yyvsp[-1].symbolinfo));
@@ -2235,12 +2240,16 @@ yyreduce:
 			(yyval.symbolinfo)->SetStartLine((yyvsp[-1].symbolinfo)->GetStartLine());
 			(yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
               logfile<<"statements : statements statement"<<endl;
+			   if((yyvsp[0].symbolinfo)->getlabel()!="")
+				   (yyval.symbolinfo)->setlabel((yyvsp[0].symbolinfo)->getlabel());
+				else   if((yyvsp[-1].symbolinfo)->getlabel()!="")
+				   (yyval.symbolinfo)->setlabel((yyvsp[-1].symbolinfo)->getlabel());
 	   }
-#line 2240 "y.tab.c"
+#line 2249 "y.tab.c"
     break;
 
   case 33: /* statement: var_declaration  */
-#line 757 "parser.y"
+#line 766 "parser.y"
                             {
 	           		      (yyval.symbolinfo)=new Symbolinfo("var_declaration","statement");
 			              (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2248,11 +2257,11 @@ yyreduce:
 			              (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
                           logfile<<"statement : var_declaration"<<endl;
         }
-#line 2252 "y.tab.c"
+#line 2261 "y.tab.c"
     break;
 
   case 34: /* statement: expression_statement  */
-#line 764 "parser.y"
+#line 773 "parser.y"
                                  {
 		                  (yyval.symbolinfo)=new Symbolinfo("expression_statement","statement");
 			              (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2260,11 +2269,11 @@ yyreduce:
 			              (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
              logfile<<"statement : expression_statement"<<endl;
 	  }
-#line 2264 "y.tab.c"
+#line 2273 "y.tab.c"
     break;
 
   case 35: /* statement: compound_statement  */
-#line 771 "parser.y"
+#line 780 "parser.y"
                                {
 		      (yyval.symbolinfo)=new Symbolinfo("compound_statement","statement");
 			              (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2272,18 +2281,18 @@ yyreduce:
 			              (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
              logfile<<"statement : compound_statement"<<endl;
 	  }
-#line 2276 "y.tab.c"
+#line 2285 "y.tab.c"
     break;
 
   case 36: /* $@6: %empty  */
-#line 778 "parser.y"
+#line 787 "parser.y"
                                             {for_start=newLabel();for_inc_start=newLabel();for_inc_end=newLabel();for_end=newLabel();codeout<<for_start<<":\n";
 	     (yyvsp[-1].symbolinfo)->addlabel(for_start);(yyvsp[-1].symbolinfo)->addlabel(for_inc_start);(yyvsp[-1].symbolinfo)->addlabel(for_inc_end);(yyvsp[-1].symbolinfo)->addlabel(for_end);}
-#line 2283 "y.tab.c"
+#line 2292 "y.tab.c"
     break;
 
   case 37: /* $@7: %empty  */
-#line 780 "parser.y"
+#line 789 "parser.y"
                                { 
 		            
                     // codeout<<"\tPOP AX\n";
@@ -2292,17 +2301,17 @@ yyreduce:
 					 codeout<<"\tJMP "<<for_inc_end<<"\n";
 					 codeout<<for_inc_start<<":\n";
 	  }
-#line 2296 "y.tab.c"
+#line 2305 "y.tab.c"
     break;
 
   case 38: /* $@8: %empty  */
-#line 787 "parser.y"
+#line 796 "parser.y"
                       { codeout<<"\tJMP "<<for_start<<"\n";codeout<<for_inc_end<<":\n";}
-#line 2302 "y.tab.c"
+#line 2311 "y.tab.c"
     break;
 
   case 39: /* statement: FOR LPAREN expression_statement $@6 expression_statement $@7 expression $@8 RPAREN statement  */
-#line 787 "parser.y"
+#line 796 "parser.y"
                                                                                                           {
 		      
 			  (yyval.symbolinfo)=new Symbolinfo("FOR LPAREN expression_statement expression_statement expression RPAREN statement","statement");
@@ -2322,11 +2331,11 @@ yyreduce:
 			 codeout<<"\tJMP "<<(*((yyvsp[-8].symbolinfo)->getlabels()))[1]<<"\n";
 			 codeout<<(*((yyvsp[-8].symbolinfo)->getlabels()))[3]<<":\n";
 	  }
-#line 2326 "y.tab.c"
+#line 2335 "y.tab.c"
     break;
 
   case 40: /* statement: if_part  */
-#line 806 "parser.y"
+#line 815 "parser.y"
                                          {
 		      (yyval.symbolinfo)=new Symbolinfo("IF LPAREN expression RPAREN statement","statement");
 			//   $$->add_child($1);
@@ -2339,22 +2348,22 @@ yyreduce:
               logfile<<"statement : IF LPAREN expression RPAREN statement"<<endl;
 			  codeout<<(yyvsp[0].symbolinfo)->getlabel()<<":\n";
 	  }
-#line 2343 "y.tab.c"
+#line 2352 "y.tab.c"
     break;
 
   case 41: /* $@9: %empty  */
-#line 818 "parser.y"
+#line 827 "parser.y"
                        { 
 		           string endelse=newLabel();
 		           codeout<<"\tJMP "<<endelse<<"\n";
 				   codeout<<(yyvsp[-1].symbolinfo)->getlabel()<<":\n";
 				   (yyvsp[-1].symbolinfo)->setlabel(endelse);
 	  }
-#line 2354 "y.tab.c"
+#line 2363 "y.tab.c"
     break;
 
   case 42: /* statement: if_part ELSE $@9 statement  */
-#line 823 "parser.y"
+#line 832 "parser.y"
                       {
 		      (yyval.symbolinfo)=new Symbolinfo("IF LPAREN expression RPAREN statement ELSE statement","statement");
 			//   $$->add_child($1);
@@ -2369,19 +2378,19 @@ yyreduce:
               logfile<<"statement : IF LPAREN expression RPAREN statement ELSE statement"<<endl;
 			  codeout<<(yyvsp[-3].symbolinfo)->getlabel()<<":\n";
 	  }
-#line 2373 "y.tab.c"
+#line 2382 "y.tab.c"
     break;
 
   case 43: /* $@10: %empty  */
-#line 837 "parser.y"
+#line 846 "parser.y"
                         {while_start=newLabel();while_end=newLabel();codeout<<while_start<<":\n";
 	      (yyvsp[0].symbolinfo)->addlabel(while_start);(yyvsp[0].symbolinfo)->addlabel(while_end);
 		 }
-#line 2381 "y.tab.c"
+#line 2390 "y.tab.c"
     break;
 
   case 44: /* $@11: %empty  */
-#line 839 "parser.y"
+#line 848 "parser.y"
                               { 
 		          //code
 				  
@@ -2389,11 +2398,11 @@ yyreduce:
 				  codeout<<"\tCMP AX, 0\n";
 				  codeout<<"\tJE "<<while_end<<"\n";
 	  }
-#line 2393 "y.tab.c"
+#line 2402 "y.tab.c"
     break;
 
   case 45: /* statement: WHILE LPAREN $@10 expression $@11 RPAREN statement  */
-#line 845 "parser.y"
+#line 854 "parser.y"
                              {
 		     (yyval.symbolinfo)=new Symbolinfo("WHILE LPAREN expression RPAREN statement","statement");
 			  (yyval.symbolinfo)->add_child((yyvsp[-6].symbolinfo));
@@ -2409,11 +2418,11 @@ yyreduce:
 			 codeout<<"\tJMP "<<(*((yyvsp[-5].symbolinfo)->getlabels()))[0]<<"\n";
 			 codeout<<(*((yyvsp[-5].symbolinfo)->getlabels()))[1]<<":\n";
 	  }
-#line 2413 "y.tab.c"
+#line 2422 "y.tab.c"
     break;
 
   case 46: /* statement: PRINTLN LPAREN ID RPAREN SEMICOLON  */
-#line 860 "parser.y"
+#line 869 "parser.y"
                                                {
 		      (yyval.symbolinfo)=new Symbolinfo("PRINTLN LPAREN ID RPAREN SEMICOLON","statement");
 			  (yyval.symbolinfo)->add_child((yyvsp[-4].symbolinfo));
@@ -2430,11 +2439,11 @@ yyreduce:
 	         codeout<<"\tCALL new_line\n";
 
 	  }
-#line 2434 "y.tab.c"
+#line 2443 "y.tab.c"
     break;
 
   case 47: /* statement: RETURN expression SEMICOLON  */
-#line 876 "parser.y"
+#line 885 "parser.y"
                                         {
 		      (yyval.symbolinfo)=new Symbolinfo("RETURN expression SEMICOLON","statement");
 			  (yyval.symbolinfo)->setDataType((yyvsp[-1].symbolinfo)->getDataType());
@@ -2446,29 +2455,32 @@ yyreduce:
 			  (yyval.symbolinfo)->SetStartLine((yyvsp[-2].symbolinfo)->GetStartLine());
 			  (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
              logfile<<"statement : RETURN expression SEMICOLON"<<endl;
+			 string label=newLabel();
+			 (yyval.symbolinfo)->setlabel(label);
+			 codeout<<"\tJMP "<<label<<"\t;nothing after return statement and before function end will execute\n";
 	  }
-#line 2451 "y.tab.c"
+#line 2463 "y.tab.c"
     break;
 
   case 48: /* $@12: %empty  */
-#line 890 "parser.y"
+#line 902 "parser.y"
                                {
 		         //codeout<<"\tPOP AX\n";
 				 codeout<<"\tCMP AX, 0\n";
 				 string endif=newLabel();
 				 codeout<<"\tJE "<<endif<<"\n";
 				 (yyvsp[0].symbolinfo)->setlabel(endif); }
-#line 2462 "y.tab.c"
+#line 2474 "y.tab.c"
     break;
 
   case 49: /* if_part: IF LPAREN expression $@12 RPAREN statement  */
-#line 895 "parser.y"
+#line 907 "parser.y"
                                                                        {(yyval.symbolinfo)->setlabel((yyvsp[-3].symbolinfo)->getlabel()); }
-#line 2468 "y.tab.c"
+#line 2480 "y.tab.c"
     break;
 
   case 50: /* expression_statement: SEMICOLON  */
-#line 897 "parser.y"
+#line 909 "parser.y"
                                 {
 	           (yyval.symbolinfo)=new Symbolinfo("SEMICOLON","expression_statement");
 			  (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2476,11 +2488,11 @@ yyreduce:
 			  (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
               logfile<<"expression_statement : SEMICOLON"<<endl;
             }
-#line 2480 "y.tab.c"
+#line 2492 "y.tab.c"
     break;
 
   case 51: /* expression_statement: expression SEMICOLON  */
-#line 904 "parser.y"
+#line 916 "parser.y"
                                                {
 				(yyval.symbolinfo)=new Symbolinfo("expression SEMICOLON","expression_statement",(yyvsp[-1].symbolinfo)->getDataType());
 			  (yyval.symbolinfo)->add_child((yyvsp[-1].symbolinfo));
@@ -2489,11 +2501,11 @@ yyreduce:
 			  (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
               logfile<<"expression_statement : expression SEMICOLON"<<endl;
 			}
-#line 2493 "y.tab.c"
+#line 2505 "y.tab.c"
     break;
 
   case 52: /* variable: ID  */
-#line 914 "parser.y"
+#line 926 "parser.y"
               {
 	          
 			  Symbolinfo *info=table->LookUp((yyvsp[0].symbolinfo)->getName());
@@ -2513,11 +2525,11 @@ yyreduce:
               logfile<<"variable : ID"<<endl;
 			  
             }
-#line 2517 "y.tab.c"
+#line 2529 "y.tab.c"
     break;
 
   case 53: /* variable: ID LSQUARE expression RSQUARE  */
-#line 933 "parser.y"
+#line 945 "parser.y"
                                          {
 		   
 		      Symbolinfo *info=table->LookUp((yyvsp[-3].symbolinfo)->getName());
@@ -2554,11 +2566,11 @@ yyreduce:
 			
 			
 	 }
-#line 2558 "y.tab.c"
+#line 2570 "y.tab.c"
     break;
 
   case 54: /* expression: logic_expression  */
-#line 971 "parser.y"
+#line 983 "parser.y"
                               {
 	                 (yyval.symbolinfo)=new Symbolinfo("logic_expression","expression",(yyvsp[0].symbolinfo)->getDataType());
 					 (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2572,11 +2584,11 @@ yyreduce:
 	         
              logfile<<"expression : logic_expression"<<endl;
         }
-#line 2576 "y.tab.c"
+#line 2588 "y.tab.c"
     break;
 
   case 55: /* expression: variable ASSIGNOP logic_expression  */
-#line 984 "parser.y"
+#line 996 "parser.y"
                                                 {
 		        if((yyvsp[-2].symbolinfo)->getDataType()=="FLOAT"||(yyvsp[0].symbolinfo)->getDataType()=="FLOAT")
 							{
@@ -2609,11 +2621,11 @@ yyreduce:
               //codeout<<"\tPUSH AX\n";
 	          arrayindex=-1;
 	   }
-#line 2613 "y.tab.c"
+#line 2625 "y.tab.c"
     break;
 
   case 56: /* logic_expression: rel_expression  */
-#line 1018 "parser.y"
+#line 1030 "parser.y"
                                   {
 	                    (yyval.symbolinfo)=new Symbolinfo("rel_expression","logic_expression",(yyvsp[0].symbolinfo)->getDataType());
 					    (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2628,17 +2640,17 @@ yyreduce:
 	              
                   logfile<<"logic_expression : rel_expression"<<endl;
         }
-#line 2632 "y.tab.c"
+#line 2644 "y.tab.c"
     break;
 
   case 57: /* $@13: %empty  */
-#line 1032 "parser.y"
+#line 1044 "parser.y"
                                   {codeout<<"\tPUSH AX\n";}
-#line 2638 "y.tab.c"
+#line 2650 "y.tab.c"
     break;
 
   case 58: /* logic_expression: rel_expression $@13 LOGICOP rel_expression  */
-#line 1032 "parser.y"
+#line 1044 "parser.y"
                                                                                   {
 			        
 			  (yyval.symbolinfo)=new Symbolinfo("rel_expression LOGICOP rel_expression","logic_expression","INT");
@@ -2691,11 +2703,11 @@ yyreduce:
 			  codeout<<label2<<":\n";
 			 }
 		 }
-#line 2695 "y.tab.c"
+#line 2707 "y.tab.c"
     break;
 
   case 59: /* rel_expression: simple_expression  */
-#line 1086 "parser.y"
+#line 1098 "parser.y"
                                     {
 	                             (yyval.symbolinfo)=new Symbolinfo("simple_expression","rel_expression",(yyvsp[0].symbolinfo)->getDataType());
 					             (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2711,17 +2723,17 @@ yyreduce:
 	             
                   logfile<<"rel_expression : simple_expression"<<endl;
         }
-#line 2715 "y.tab.c"
+#line 2727 "y.tab.c"
     break;
 
   case 60: /* $@14: %empty  */
-#line 1101 "parser.y"
+#line 1113 "parser.y"
                                     {codeout<<"\tPUSH AX\n";}
-#line 2721 "y.tab.c"
+#line 2733 "y.tab.c"
     break;
 
   case 61: /* rel_expression: simple_expression $@14 RELOP simple_expression  */
-#line 1101 "parser.y"
+#line 1113 "parser.y"
                                                                                         {
 			    (yyval.symbolinfo)=new Symbolinfo("simple_expression RELOP simple_expression","rel_expression","INT");
 				(yyval.symbolinfo)->add_child((yyvsp[-3].symbolinfo));
@@ -2753,11 +2765,11 @@ yyreduce:
 			  //codeout<<"\tPUSH AX\n";
 			  codeout<<label2<<":\n";
 		}
-#line 2757 "y.tab.c"
+#line 2769 "y.tab.c"
     break;
 
   case 62: /* simple_expression: term  */
-#line 1134 "parser.y"
+#line 1146 "parser.y"
                          {
 	                  (yyval.symbolinfo)=new Symbolinfo("term","simple_expression",(yyvsp[0].symbolinfo)->getDataType());
 					 (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -2771,17 +2783,17 @@ yyreduce:
 						 }
                      logfile<<"simple_expression : term"<<endl;
         }
-#line 2775 "y.tab.c"
+#line 2787 "y.tab.c"
     break;
 
   case 63: /* $@15: %empty  */
-#line 1147 "parser.y"
+#line 1159 "parser.y"
                                       {codeout<<"\tPUSH AX\n";}
-#line 2781 "y.tab.c"
+#line 2793 "y.tab.c"
     break;
 
   case 64: /* simple_expression: simple_expression $@15 ADDOP term  */
-#line 1147 "parser.y"
+#line 1159 "parser.y"
                                                                           {
 			             if((yyvsp[-3].symbolinfo)->getDataType()=="FLOAT"||(yyvsp[-1].symbolinfo)->getDataType()=="FLOAT")
 							{
@@ -2817,11 +2829,11 @@ yyreduce:
 					codeout<<"\tPUSH AX\n";
 					ADDOP_code((yyvsp[-1].symbolinfo));
 		  }
-#line 2821 "y.tab.c"
+#line 2833 "y.tab.c"
     break;
 
   case 65: /* term: unary_expression  */
-#line 1184 "parser.y"
+#line 1196 "parser.y"
                          {
 	                     cout<<"checking:"<<(yyvsp[0].symbolinfo)->getDataType()<<endl;
 	                        (yyval.symbolinfo)=new Symbolinfo("unary_expression","term",(yyvsp[0].symbolinfo)->getDataType());
@@ -2835,17 +2847,17 @@ yyreduce:
 						 }
                          logfile<<"term : unary_expression"<<endl;
         }
-#line 2839 "y.tab.c"
+#line 2851 "y.tab.c"
     break;
 
   case 66: /* $@16: %empty  */
-#line 1197 "parser.y"
+#line 1209 "parser.y"
             {codeout<<"\tPUSH AX\n";}
-#line 2845 "y.tab.c"
+#line 2857 "y.tab.c"
     break;
 
   case 67: /* term: term $@16 MULOP unary_expression  */
-#line 1197 "parser.y"
+#line 1209 "parser.y"
                                                              {
 		                 cout<<"unary_expression:"<<(yyvsp[-1].symbolinfo)->getiszero()<<endl;
 						    if(((yyvsp[-3].symbolinfo)->getDataType()=="FLOAT"||(yyvsp[-1].symbolinfo)->getDataType()=="FLOAT")&& (yyvsp[-1].symbolinfo)->getName()!="%")
@@ -2884,11 +2896,11 @@ yyreduce:
 						 codeout<<"\tPUSH AX\n";
 						 MULOP_code((yyvsp[-1].symbolinfo));
 	 }
-#line 2888 "y.tab.c"
+#line 2900 "y.tab.c"
     break;
 
   case 68: /* unary_expression: ADDOP unary_expression  */
-#line 1237 "parser.y"
+#line 1249 "parser.y"
                                           {
 	                    
 	                     (yyval.symbolinfo)=new Symbolinfo("ADDOP unary_expression","unary_expression",(yyvsp[0].symbolinfo)->getDataType());
@@ -2913,11 +2925,11 @@ yyreduce:
 				 }
 
          }
-#line 2917 "y.tab.c"
+#line 2929 "y.tab.c"
     break;
 
   case 69: /* unary_expression: NOT unary_expression  */
-#line 1261 "parser.y"
+#line 1273 "parser.y"
                                         {
 			             (yyval.symbolinfo)=new Symbolinfo("NOT unary_expression","unary_expression",(yyvsp[0].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[-1].symbolinfo));
@@ -2945,11 +2957,11 @@ yyreduce:
 			  codeout<<label2<<":\n";
 
 		 }
-#line 2949 "y.tab.c"
+#line 2961 "y.tab.c"
     break;
 
   case 70: /* unary_expression: factor  */
-#line 1288 "parser.y"
+#line 1300 "parser.y"
                           {   
 			          cout<<"FACTOR:"<<(yyvsp[0].symbolinfo)->getiszero()<<endl;
 					  (yyval.symbolinfo)=new Symbolinfo("factor","unary_expression",(yyvsp[0].symbolinfo)->getDataType());
@@ -2964,11 +2976,11 @@ yyreduce:
 			          
                       logfile<<"unary_expression : factor"<<endl;
 		 }
-#line 2968 "y.tab.c"
+#line 2980 "y.tab.c"
     break;
 
   case 71: /* factor: variable  */
-#line 1304 "parser.y"
+#line 1316 "parser.y"
                   {  
 	                    
 					  (yyval.symbolinfo)=new Symbolinfo("variable","factor",(yyvsp[0].symbolinfo)->getDataType());
@@ -2982,11 +2994,11 @@ yyreduce:
 					  arrayindex=-1;
 					  
         }
-#line 2986 "y.tab.c"
+#line 2998 "y.tab.c"
     break;
 
   case 72: /* factor: ID LPAREN argument_list RPAREN  */
-#line 1317 "parser.y"
+#line 1329 "parser.y"
                                          {//function call
 	                
 					 cout<<endl;
@@ -3006,11 +3018,11 @@ yyreduce:
                       logfile<<"factor : ID LPAREN argument_list RPAREN"<<endl;
 					  codeout<<"\tCALL "<<(yyvsp[-3].symbolinfo)->getName()<<"\n";
 	}
-#line 3010 "y.tab.c"
+#line 3022 "y.tab.c"
     break;
 
   case 73: /* factor: LPAREN expression RPAREN  */
-#line 1336 "parser.y"
+#line 1348 "parser.y"
                                    {
 		             (yyval.symbolinfo)=new Symbolinfo("LPAREN expression RPAREN","factor",(yyvsp[-1].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[-2].symbolinfo));
@@ -3020,11 +3032,11 @@ yyreduce:
 			             (yyval.symbolinfo)->SetEndLine((yyvsp[0].symbolinfo)->GetEndLine());
                      logfile<<"factor : LPAREN expression RPAREN"<<endl;
 	}
-#line 3024 "y.tab.c"
+#line 3036 "y.tab.c"
     break;
 
   case 74: /* factor: CONST_INT  */
-#line 1345 "parser.y"
+#line 1357 "parser.y"
                     {
                 (yyvsp[0].symbolinfo)->setDataType("INT");
 		        (yyval.symbolinfo)=new Symbolinfo("CONST_INT","factor",(yyvsp[0].symbolinfo)->getDataType());
@@ -3041,11 +3053,11 @@ yyreduce:
 				//codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
 				arrayindex=stoi((yyvsp[0].symbolinfo)->getName());
 	}
-#line 3045 "y.tab.c"
+#line 3057 "y.tab.c"
     break;
 
   case 75: /* factor: CONST_FLOAT  */
-#line 1361 "parser.y"
+#line 1373 "parser.y"
                       {
 		         (yyvsp[0].symbolinfo)->setDataType("FLOAT");
 		       (yyval.symbolinfo)=new Symbolinfo("CONST_FLOAT","factor",(yyvsp[0].symbolinfo)->getDataType());
@@ -3056,11 +3068,11 @@ yyreduce:
 			  //codeout<<"\tPUSH AX\t;line number:"<<line_count<<"\n";
                logfile<<"factor : CONST_FLOAT"<<endl;
 	}
-#line 3060 "y.tab.c"
+#line 3072 "y.tab.c"
     break;
 
   case 76: /* factor: variable INCOP  */
-#line 1371 "parser.y"
+#line 1383 "parser.y"
                          {
 		       (yyval.symbolinfo)=new Symbolinfo("variable INCOP","factor",(yyvsp[-1].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[-1].symbolinfo));
@@ -3070,17 +3082,18 @@ yyreduce:
              logfile<<"factor : variable INCOP"<<endl;
 			  vector<Symbolinfo*>temp=*((yyvsp[-1].symbolinfo)->getChildList());
 					  variable_code(temp[0],arrayindex);
+					  codeout<<"\tPUSH AX\n";
 					  codeout<<"\tINC AX\n";
 					  assigntovariable(temp[0],arrayindex);
-					  //codeout<<"\tPOP AX\n";
+					  codeout<<"\tPOP AX\n";
 					  arrayindex=-1;
  
 	}
-#line 3080 "y.tab.c"
+#line 3093 "y.tab.c"
     break;
 
   case 77: /* factor: variable DECOP  */
-#line 1386 "parser.y"
+#line 1399 "parser.y"
                          {
 		     (yyval.symbolinfo)=new Symbolinfo("variable DECOP","factor",(yyvsp[-1].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[-1].symbolinfo));
@@ -3091,16 +3104,18 @@ yyreduce:
             logfile<<"factor : variable DECOP"<<endl;
 			 vector<Symbolinfo*>temp=*((yyvsp[-1].symbolinfo)->getChildList());
 					  variable_code(temp[0],arrayindex);
+					  codeout<<"\tPUSH AX\n";
 					  codeout<<"\tDEC AX\n";
+					  
 					  assigntovariable(temp[0],arrayindex);
-					  //codeout<<"\tPOP AX\n";
+					  codeout<<"\tPOP AX\n";
 					  arrayindex=-1;
 	}
-#line 3100 "y.tab.c"
+#line 3115 "y.tab.c"
     break;
 
   case 78: /* argument_list: arguments  */
-#line 1403 "parser.y"
+#line 1418 "parser.y"
                           {
 	                  (yyval.symbolinfo)=new Symbolinfo("arguments","argument_list",(yyvsp[0].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -3109,21 +3124,21 @@ yyreduce:
 	               ArgumentList=Argument;
                    logfile<<"argument_list	: arguments"<<endl;
               }
-#line 3113 "y.tab.c"
+#line 3128 "y.tab.c"
     break;
 
   case 79: /* argument_list: %empty  */
-#line 1411 "parser.y"
+#line 1426 "parser.y"
                             { 
 				      (yyval.symbolinfo)=new Symbolinfo("","argument_list","");
 				   ArgumentList=new vector<Symbolinfo*>();
                    logfile<<"argument_list	: "<<endl;
 			  }
-#line 3123 "y.tab.c"
+#line 3138 "y.tab.c"
     break;
 
   case 80: /* arguments: arguments COMMA logic_expression  */
-#line 1418 "parser.y"
+#line 1433 "parser.y"
                                              {
 	                 (yyval.symbolinfo)=new Symbolinfo("arguments COMMA logic_expression","arguments",(yyvsp[-2].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[-2].symbolinfo));
@@ -3138,11 +3153,11 @@ yyreduce:
                   logfile<<"arguments	: arguments COMMA logic_expression"<<endl;
 				  codeout<<"\tPUSH AX\n";
            }
-#line 3142 "y.tab.c"
+#line 3157 "y.tab.c"
     break;
 
   case 81: /* arguments: logic_expression  */
-#line 1432 "parser.y"
+#line 1447 "parser.y"
                                  {
 			       (yyval.symbolinfo)=new Symbolinfo("logic_expression","arguments",(yyvsp[0].symbolinfo)->getDataType());
 					     (yyval.symbolinfo)->add_child((yyvsp[0].symbolinfo));
@@ -3158,11 +3173,11 @@ yyreduce:
                 logfile<<"arguments	: logic_expression"<<endl;
 			
 		  }
-#line 3162 "y.tab.c"
+#line 3177 "y.tab.c"
     break;
 
 
-#line 3166 "y.tab.c"
+#line 3181 "y.tab.c"
 
       default: break;
     }
@@ -3355,7 +3370,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 1449 "parser.y"
+#line 1464 "parser.y"
 
 int main(int argc,char *argv[])
 {

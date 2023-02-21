@@ -13,10 +13,10 @@ int g(int a, int b){
 	
     int x,i;
     x=f(a)+a+b;
-    println(x);
+    //println(x);
     for(i=0;i<7;i++){
     	if(i%3 == 0){
-            println(i);
+            //println(i);
     		x = x+5;
     	}
     	else{

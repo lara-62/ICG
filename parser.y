@@ -500,7 +500,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { Symbolinfo *i
 					}
 					returnLine=-1;
 					function_return="";
-					function_end($2,var_prevscope);
+					function_end($2,var_prevscope,$7->getlabel());
                 }
 		        | type_specifier ID LPAREN RPAREN {Symbolinfo *info=new Symbolinfo($2->getName(),$2->getType()); info->SetStartLine($2->GetStartLine());
 				 info->SetEndLine($2->GetEndLine());define_function($1->getDataType(),info,new vector<Symbolinfo*>());function_start($2);}compound_statement {
@@ -531,7 +531,7 @@ func_definition : type_specifier ID LPAREN parameter_list RPAREN { Symbolinfo *i
 					}
 					returnLine=-1;
 					function_return="";
-					function_end($2,var_prevscope);
+					function_end($2,var_prevscope,$6->getlabel());
 		}
  		;				
 
@@ -604,7 +604,8 @@ compound_statement : LCURL{ table->Enter_Scope();if(function_parameter!=NULL){ad
 					   var_prevscope=table->getvarCountCurrentScope();
 					   table->printAll(logfile);
 					   table->Exit_Scope();
-					   
+					    
+				   $$->setlabel($3->getlabel());
                   }
  		    | LCURL{ table->Enter_Scope();add_parameter_toScopeTable(function_parameter);clear_list(function_parameter);} RCURL {
 				        $$=new Symbolinfo("LCURL RCURL","compound_statement");
@@ -615,6 +616,8 @@ compound_statement : LCURL{ table->Enter_Scope();if(function_parameter!=NULL){ad
 			           $$->SetEndLine($3->GetEndLine());
 					  table->printAll(logfile);
 				      table->Exit_Scope();
+					    
+				   $$->setlabel("");
                       logfile<<"compound_statement : LCURL RCURL"<<endl;
 			}
  		    ;
@@ -743,6 +746,8 @@ statements : statement {
 			       $$->SetStartLine($1->GetStartLine());
 			       $$->SetEndLine($1->GetEndLine());
                    logfile<<"statements	: statement"<<endl;
+				   if($1->getlabel()!="")
+				   $$->setlabel($1->getlabel());
         }
 	   | statements statement {
 		      $$=new Symbolinfo("statements statement","statements");
@@ -751,6 +756,10 @@ statements : statement {
 			$$->SetStartLine($1->GetStartLine());
 			$$->SetEndLine($2->GetEndLine());
               logfile<<"statements : statements statement"<<endl;
+			   if($2->getlabel()!="")
+				   $$->setlabel($2->getlabel());
+				else   if($1->getlabel()!="")
+				   $$->setlabel($1->getlabel());
 	   }
 	   ;
 	   
@@ -884,6 +893,9 @@ statement : var_declaration {
 			  $$->SetStartLine($1->GetStartLine());
 			  $$->SetEndLine($3->GetEndLine());
              logfile<<"statement : RETURN expression SEMICOLON"<<endl;
+			 string label=newLabel();
+			 $$->setlabel(label);
+			 codeout<<"\tJMP "<<label<<"\t;nothing after return statement and before function end will execute\n";
 	  }
 	  ;
 
@@ -1377,9 +1389,10 @@ factor	: variable{
              logfile<<"factor : variable INCOP"<<endl;
 			  vector<Symbolinfo*>temp=*($1->getChildList());
 					  variable_code(temp[0],arrayindex);
+					  codeout<<"\tPUSH AX\n";
 					  codeout<<"\tINC AX\n";
 					  assigntovariable(temp[0],arrayindex);
-					  //codeout<<"\tPOP AX\n";
+					  codeout<<"\tPOP AX\n";
 					  arrayindex=-1;
  
 	}
@@ -1393,9 +1406,11 @@ factor	: variable{
             logfile<<"factor : variable DECOP"<<endl;
 			 vector<Symbolinfo*>temp=*($1->getChildList());
 					  variable_code(temp[0],arrayindex);
+					  codeout<<"\tPUSH AX\n";
 					  codeout<<"\tDEC AX\n";
+					  
 					  assigntovariable(temp[0],arrayindex);
-					  //codeout<<"\tPOP AX\n";
+					  codeout<<"\tPOP AX\n";
 					  arrayindex=-1;
 	}
 	;

@@ -3,6 +3,7 @@
         "memory": "c",
         "future": "c",
         "istream": "c",
-        "functional": "c"
+        "functional": "c",
+        "ostream": "cpp"
     }
 }
