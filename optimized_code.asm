@@ -26,8 +26,7 @@ MOV BX ,2
 	MOV a[SI], AX	;assigning to global variable a
 	SUB SP, 2	;ring variable i
 	MOV AX, 0	;line number:7
-	MOV BX, AX	;
-	MOV AX, BX	;
+	MOV BX, AX	;;Removing redundant assigment after it
 MOV BX ,2
 	MUL BX
 	MOV SI, AX;	ASSIGNING INDEX REGISTER TO INDEX OF ARRAY
@@ -67,8 +66,7 @@ MOV BX ,2
 	POP AX
 	MOV a[SI], AX	;assigning to global variable a
 	MOV AX, 0	;line number:15
-	MOV BX, AX	;
-	MOV AX, BX	;
+	MOV BX, AX	;;Removing redundant assigment after it
 MOV BX ,2
 	MUL BX
 	MOV SI, AX;	ASSIGNING INDEX REGISTER TO INDEX OF ARRAY
@@ -82,8 +80,7 @@ MOV BX ,2
 	MUL BX
 	PUSH AX
 	MOV AX, 2	;line number:15
-	MOV BX, AX	;
-	MOV AX, BX	;
+	MOV BX, AX	;;Removing redundant assigment after it
 MOV BX ,2
 	MUL BX
 	MOV SI, AX;	ASSIGNING INDEX REGISTER TO INDEX OF ARRAY
@@ -99,8 +96,7 @@ MOV BX ,2
 	POP BX
 	POP AX
 	ADD AX, BX
-	MOV [BP-6], AX	;assigning to local variable k
-	MOV AX, [BP-6]	; storing local variable k to AX
+	MOV [BP-6], AX	;assigning to local variable k;Removing redundant assigment after it
 	CALL print_output
 	CALL new_line
 	ADD SP, 10

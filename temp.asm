@@ -1,13 +1,3 @@
-;-------
-;
-;-------
-.MODEL SMALL
-.STACK 1000H
-.Data
-	CR EQU 0DH
-	LF EQU 0AH
-	number DB "00000$"
-	a DW 5 DUP (0000H)	;declaring array a
 .CODE
 main PROC
 	MOV AX, @DATA

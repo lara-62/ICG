@@ -4,6 +4,8 @@
         "future": "c",
         "istream": "c",
         "functional": "c",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "chrono": "c",
+        "variant": "c"
     }
 }

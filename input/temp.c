@@ -10,7 +10,7 @@ int main()
             println(j);
             j++;
         }
-        
+        i++;
     }
     
     return 0;
